@@ -20,6 +20,7 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
   ├── config.py
   ├── database.py
   ├── tables.sql
+  ├── queries.sql
   └── README.md
 ```
 ## Features
