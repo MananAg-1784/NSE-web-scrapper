@@ -1,7 +1,7 @@
 use stock_data;
 
 create table if not exists prices(
-	stock_id int,
+    stock_id int,
     date date,
     open float,
     close float,
@@ -16,22 +16,22 @@ create table if not exists prices(
 );
 
 create table if not exists sectors(
-	sector_id int primary key auto_increment,
+    sector_id int primary key auto_increment,
     sector varchar(100) not null unique
 );
 
 create table if not exists industry(
-	industry_id int primary key auto_increment,
+    industry_id int primary key auto_increment,
     industry varchar(100) not null unique
 );
 
 create table if not exists indices(
-	indice_id int primary key auto_increment,
+    indice_id int primary key auto_increment,
     indices varchar(100) not null unique
 );
 
 create table if not exists stocks(
-	stock_id int primary key auto_increment,
+    stock_id int primary key auto_increment,
     symbol varchar(50) not null unique,
     company_name varchar(200) not null unique,
     listing_date date,
@@ -44,11 +44,24 @@ create table if not exists stocks(
 );
 
 create table if not exists stock_indices(
-	stock_id int not null,
+    stock_id int not null,
     indice_id int not null,
     primary key (stock_id, indice_id),
     foreign key (stock_id) references stocks(stock_id),
     foreign key (indice_id) references indices(indice_id)
 );
+
+create table if not exists stock_info(
+    stock_id int primary key,
+    weekHigh float not null, 
+    weekLow float not null,
+    highDate date not null,
+    lowDate date not null,
+    symbolPE float not null,
+    adjustedPE float,
+    last_updated timestamp default current_timestamp,
+    foreign key (stock_id) references stocks(stock_id)
+);
+
 
 
