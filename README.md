@@ -24,7 +24,7 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
   └── README.md
 ```
 ## Features
-* **URl Management** : It utilises requests to initialise sessions and get data from the preloaded url's in `values.py`
+* **URL Management** : It utilises requests to initialise sessions and get data from the preloaded url's in `values.py`
 * **Data Extraction** : HTML parser using Beautiful Socp
 * **Data Storage** : Extracted data can be stored in the form of a `.csv` file and collected in the form of `dict` 
 * **Biltin Logger** :  for logging all the details in 3 levels (info, warning, error) in the `log.log` file
