@@ -63,5 +63,9 @@ create table if not exists stock_info(
     foreign key (stock_id) references stocks(stock_id)
 );
 
+CREATE INDEX idx_stock_date ON prices(stock_id, date);  -- indexing in the prices table on both date and stock
+CREATE INDEX idx_stock_indice ON stock_indices(stock_id);
+CREATE INDEX idx_indice_stock ON stock_indices(indice_id);
+CREATE INDEX idx_stock_symbol ON stocks(symbol);
 
 
