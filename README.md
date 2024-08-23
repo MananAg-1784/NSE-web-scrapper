@@ -1,11 +1,12 @@
 # NSE-web-scrapper
 Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract data from NSE Website related to stocks and Indices
-* It utilises requests to initialise sessions and get data from the presented url
-* HTML is parsed using BeautifulSoup
-* Extracted data can be stored in the form of a `.csv` file and collected in the form of `dict`
-* Builtin Logger for logging all the details in 3 levels (info, warning, error)
 
-Check the `run.py` file for some dummy codes and examples of now to use and store the data gathered from the scrapper in a database
+## Table of Content
+1. [Package Structure](#package-structure)
+2. [Features](#features)
+3. [How to Use](#how-to-use)
+4. [Database Structure](#database-structure)
+5. [Contact](#contact)
 
 ## Package Structure
 ```bash
@@ -18,8 +19,16 @@ Check the `run.py` file for some dummy codes and examples of now to use and stor
   ├── run.py
   ├── config.py
   ├── database.py
+  ├── tables.sql
   └── README.md
 ```
+## Features
+* **URl Management** : It utilises requests to initialise sessions and get data from the preloaded url's in `values.py`
+* **Data Extraction** : HTML parser using Beautiful Socp
+* **Data Storage** : Extracted data can be stored in the form of a `.csv` file and collected in the form of `dict` 
+* **Biltin Logger** :  for logging all the details in 3 levels (info, warning, error) in the `log.log` file
+
+Check the `run.py` file for some dummy codes and examples of now to use and store the data gathered from the scrapper in a database
 
 ## How to Use
 
@@ -45,6 +54,11 @@ objectName.get_all_indices(save_data=True)   # Get all the indices list along wi
 ```
 
 ## Database Structure
+
+The SQL query to create the tables can be seen in `tables.sql` file
+<br>Some mock queries that can be useful are also given in `queries.sql` file
+
+![Test Image 5](/Database_schema.png)
 
 ## Contact 
 
