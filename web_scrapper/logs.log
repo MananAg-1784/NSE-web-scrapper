@@ -1,8 +1,8 @@
-[August 08, 00:25:31] | INFO | create_logger >>> Logger configured...
-[August 08, 00:25:32] | DEBUG | _new_conn >>> Starting new HTTPS connection (1): www.nseindia.com:443
-[August 08, 00:25:33] | DEBUG | _make_request >>> https://www.nseindia.com:443 "GET / HTTP/1.1" 200 None
-[August 08, 00:25:33] | INFO | initial_session >>> Session Initialized >> https://www.nseindia.com
-[August 08, 00:25:33] | INFO | get_url_data >>> Sending reques to url : https://www.nseindia.com/api/quote-equity?symbol=RELIANCE
-[August 08, 00:25:33] | DEBUG | _make_request >>> https://www.nseindia.com:443 "GET /api/quote-equity?symbol=RELIANCE HTTP/1.1" 200 1314
-[August 08, 00:25:33] | INFO | get_url_data >>> Response Recieved....
-[August 08, 00:25:33] | INFO | stock_data >>> Extracting information for the stock : RELIANCE
+[August 15, 22:07:16] | INFO | create_logger >>> Logger configured...
+[August 15, 22:07:22] | DEBUG | _new_conn >>> Starting new HTTPS connection (1): www.nseindia.com:443
+[August 15, 22:07:24] | DEBUG | _make_request >>> https://www.nseindia.com:443 "GET / HTTP/1.1" 200 None
+[August 15, 22:07:24] | INFO | initial_session >>> Session Initialized >> https://www.nseindia.com
+[August 15, 22:07:24] | INFO | get_url_data >>> Sending reques to url : https://www.nseindia.com/api/quote-equity?symbol=RELIANCE
+[August 15, 22:07:24] | DEBUG | _make_request >>> https://www.nseindia.com:443 "GET /api/quote-equity?symbol=RELIANCE HTTP/1.1" 200 1320
+[August 15, 22:07:24] | INFO | get_url_data >>> Response Recieved....
+[August 15, 22:07:24] | INFO | stock_data >>> Extracting information for the stock : RELIANCE

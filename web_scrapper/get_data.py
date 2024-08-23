@@ -8,24 +8,33 @@ import requests
 import pandas as pd
 import json
 from io import StringIO
-
+from datetime import datetime, timedelta
+from ping3 import ping
 
 class nse_data:
-    def __init__(self, path):
+    def __init__(self, path_):
         self.session = None  # Session object
-        self.path = path    # Initialise the path for files
+        self.path = path_    # Initialise the path for files
         self.BASE_URL = "https://www.nseindia.com"
         self.INDICE_URL = "https://www.niftyindices.com"
         self.headers ={
         "user-agent": "Chrome/87.0.4280.88"
         }
-    
+
     def initial_session(self, domain:str = None) -> None:
         '''
         Creates and Initializes the session variable 
 
         :param domain: (Optional) domain of the website to create the session in
         '''
+        try:
+            if type(ping("3.6.0.0")) != float:
+                raise Exception("Not Connected to the internet")
+        except Exception as e:
+            print("Ping Error... Check your internet connection and try again...")
+            logger.error("Not connected to the internet")
+            raise Exception("Ping Error")
+     
         self.session = requests.session()
         if not domain :
             self.session.get( self.BASE_URL, headers = self.headers)
@@ -55,18 +64,20 @@ class nse_data:
         :param relative_url: The relative url for the nse website
         :param domain: (Optional) Domain you want to connect to 
         :param cookies: (Optional) Cookies value for the website
+
+        :return : Returns the HTML response as strings | In case of Exception the function return None
         '''
         domain = self.BASE_URL if not domain else domain
         if not domain.startswith(('http://', 'https://')):
             domain = 'https://' + domain
         url = urljoin( domain , relative_url)
-        self.initial_session(domain)
         search_results = None
 
         print("Sending request to website : {}".format(url) )
         logger.info("Sending reques to url : {}".format(url))
 
         try:
+            self.initial_session(domain)
             if not cookies:
                 response = self.session.get(url, headers=self.headers)
             else:
@@ -86,12 +97,15 @@ class nse_data:
             logger.error("Requesting Url Exception :  {}".format(e))
             return None
 
-    def get_all_indices(self, indice_type:list = url_data.major_indices.value, save_data:bool = False) -> dict|None :
+    def get_all_indices(self, indice_type:list = url_data.major_indices.value, save_data:bool = False) -> dict :
         '''
         Returns all the nifty indices name and links from one of the categories mentioned in url_data.major_indices
 
-        :param indice_type: (Optional) One of the values from url_data.major_indices.value otherwise gives all indices
+        :param indice_type: (Optional) One of the values from ` url_data.major_indices.value ` otherwise gives all indices
         :param save_data : (Optional) To save the data in a csv file
+
+        :return : Returns the data as dict with [name, links] of the indices
+                  In case of any exception or no response returns an empty dict()
         '''
         logger.info("Get indices for : {}".format(indice_type))
         return_response = {}
@@ -102,7 +116,7 @@ class nse_data:
             url = urljoin(self.BASE_URL, url)
             response = self.get_url_data(url)
             if not response:
-                return None
+                return {}
 
             soup = BeautifulSoup(response,"html.parser")
             ul = soup.find(class_="mt-3").find("ul")
@@ -127,17 +141,19 @@ class nse_data:
             self.save_data(d, "Indices")
         return return_response
 
-    def get_stocks_list(self, indice_url:str, save_data = False) -> dict|None :
+    def get_stocks_list(self, indice_url:str, save_data = False) -> list :
         '''
         Get all the stocks present in the given indice url (which can be gathered from get_all_indices)
 
-        :param indice_relative_url : Url to get the stocks data list from
+        :param indice_url : Url to get the stocks data list from
         :param save_data : (Optional) Boolean value to save data as a csv file
+
+        :return : List of dict(Contains data about the individual stocks)
         '''
         link_domain = urlparse(indice_url).netloc
         url_data = self.get_url_data(indice_url, link_domain)
         if not url_data:
-            return None
+            return []
 
         soup = BeautifulSoup(url_data,"html.parser")
         indice_name = soup.title.text.strip()
@@ -158,7 +174,7 @@ class nse_data:
 
                 link = urljoin(link_domain, link)
                 print("\nExtracting the CSV File....\nUrl : ",link)
-                logger.info("Extracting csv data from : ",link)
+                logger.info(f"Extracting csv data from : {link}")
                 response = requests.get(link, headers=self.headers)
                 print("--- CSV file downloaded ---")
 
@@ -168,32 +184,82 @@ class nse_data:
                     print(f"\nTotal Stocks : {len(df)}\nColumns : {df.columns.to_list()}")
                     if save_data:
                         self.save_data(df, indice_name)
-                    return df.to_dict(orient='list')
+                    return df.to_dict(orient='records')
                 else:
                     print("Failed to download the CSV file. Status code:", response.status_code)
                     logger.error("Failed to download csv file : (response code) ",response.status_code)
+        return []
 
-    def stock_data(self,symbol:str, return_raw:bool = False) -> dict|None :
+    def stock_data(self, symbol:str, return_raw:bool = False) -> dict|None :
         '''
         Extracts data for the stock in real time for the current day 
         Adviced to not use when the market is currently open
 
         :param symbol: The stock identification symbol in NSE
         :param return_raw: (Optional) returns the entire json fromt he request
+
+        :returns : The dict format for the json data of the stock
         '''
+        symbol = symbol.upper()
         url = url_data.stock_data_api.value.format(symbol.upper().strip())
         response = self.get_url_data(url)
         
         print("Extracting information for the stock : {}".format(symbol))
         logger.info("Extracting information for the stock : {}".format(symbol))
-
         if response:
             response = json.loads(response)
             if return_raw: return response
             else:
-                pass
-            
+                return {key:response[key] for key in ["metadata","priceInfo","industryInfo"]}
         return None
 
+    def historical_stock_data(self, symbol:str, end_date:datetime = datetime.today(), start_date:datetime = None ) -> None|Exception :
+        '''
+        Extract the 1yr historical data of the stock from the start date
+        Returns a csv file that is stored in self.path
 
+        :param symbol: symbol to identify stock
+        :param end_date: (Optional) end date for the data extraction (Default: today)
+        :param start_date: (Optional) Starting date for the values
 
+        :return : Saves the data in an csv file in the path specified during class initialization
+                  Exception in any other cases
+        '''
+        self.initial_session()
+        symbol = symbol.upper()
+        self.session.get( urljoin(self.BASE_URL,url_data.stock_data_url.value.format(symbol) ) , headers=self.headers)  # to save cookies
+
+        if not start_date:
+            start_date = datetime(end_date.year - 1, end_date.month, end_date.day )
+        if start_date < end_date:
+            return Exception("The end date is before the starting time period")
+        start_date = start_date.strftime("%d-%m-%Y")
+        end_date = end_date.strftime("%d-%m-%Y")
+
+        url = url_data.stock_historical_data.value.format(symbol) + "&series=[%22EQ%22]&from=" + start_date + "&to=" + end_date + "&csv=true"
+        url = urljoin(self.BASE_URL, url)
+        print("Url : ", url)
+        logger.info(f"Sending request to url >>>> {url}")
+
+        response = self.session.get(url, headers = self.headers)
+        print("Start date : ", start_date, "\nEnd date : ", to_date)
+        logger.info("Historical data for {}, From : {}".format(symbol,start_date))
+        self.save_data(StringIO(response.text[3:]),f"{symbol}_{start_date.strftime('%Y-%m-%d')}")
+        
+    def search_stocks(self, name:str) -> list :
+        '''
+        Takes a input string and returns all the possbile equity stocks with the name
+
+        :param name: Input string for the stock name
+
+        :return : List of dict(symbol, comanyName) | Empty list[]
+        '''
+        url = url_data.search_url.value.format(name)
+        response = self.get_url_data(url)
+        stocks = []
+        if response:
+            for i in json.loads(response)["symbols"]:
+                stocks.append({"symbol":i["symbol"],"company":i["symbol_info"]})
+
+        print("Stocks with name : ", name, "Total : ", len(stocks))
+        return stocks

@@ -2,11 +2,13 @@ from enum import Enum
 
 class url_data(Enum):
     indice_url = "/products-services/indices-"
+    search_url = '/api/search/autocomplete?q={}'    
     stock_data_url = "/get-quotes/equity?symbol={}"
     stock_data_api = "/api/quote-equity?symbol={}"
+    stock_historical_data = "api/historical/cm/equity?symbol={}"
+    major_indices = ["Broad Market","Sectoral","Thematic"]
     # niftyindices.com
     indice_stock = "/market-data/equity-stock-watch?Iname={}"
-    major_indices = ["Broad Market","Sectoral","Thematic"]
 
 class stock_data_id(Enum):
     stock_data_id = {
