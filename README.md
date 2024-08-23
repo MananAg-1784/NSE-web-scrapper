@@ -58,7 +58,7 @@ objectName.get_all_indices(save_data=True)   # Get all the indices list along wi
 The SQL query to create the tables can be seen in `tables.sql` file
 <br>Some mock queries that can be useful are also given in `queries.sql` file
 
-![Test Image 5](/Database_schema.png)
+![Test Image 5](/database_schema.png)
 
 ## Contact 
 
