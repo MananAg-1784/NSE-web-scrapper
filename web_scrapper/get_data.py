@@ -33,7 +33,7 @@ class nse_data:
         except Exception as e:
             print("Ping Error... Check your internet connection and try again...")
             logger.error("Not connected to the internet")
-            raise Exception("Ping Error")
+            # raise Exception("Ping Error")
      
         self.session = requests.session()
         if not domain :
@@ -51,11 +51,14 @@ class nse_data:
         :param data: pd.Dataframe containing the data to store
         :param name: Name of the csv file
         '''
-        url = self.path + f"\{name}.csv"
-        data = pd.DataFrame(data)
-        data.to_csv(url, sep=",")
-        print("Data saved in file : {}".format(url))
-        logger.info("Data stored in file : {}".format(url))
+        try:
+            url = self.path + f"\{name}.csv"
+            data = pd.DataFrame(data)
+            data.to_csv(url, sep=",")
+            print("Data saved in file : {}".format(url))
+            logger.info("Data stored in file : {}".format(url))
+        except Exception as e:
+            print("\nThe file may be available previously\nError saving the file : ",(e))
 
     def get_url_data(self, relative_url:str, domain:str = None, cookies:dict = None) -> str|None:
         '''
@@ -221,6 +224,7 @@ class nse_data:
         :param symbol: symbol to identify stock
         :param end_date: (Optional) end date for the data extraction (Default: today)
         :param start_date: (Optional) Starting date for the values
+        (Deafult: end_date - 1 years)
 
         :return : Saves the data in an csv file in the path specified during class initialization
                   Exception in any other cases
@@ -231,7 +235,7 @@ class nse_data:
 
         if not start_date:
             start_date = datetime(end_date.year - 1, end_date.month, end_date.day )
-        if start_date < end_date:
+        if not start_date < end_date:
             return Exception("The end date is before the starting time period")
         start_date = start_date.strftime("%d-%m-%Y")
         end_date = end_date.strftime("%d-%m-%Y")
@@ -242,9 +246,11 @@ class nse_data:
         logger.info(f"Sending request to url >>>> {url}")
 
         response = self.session.get(url, headers = self.headers)
-        print("Start date : ", start_date, "\nEnd date : ", to_date)
+        print("Start date : ", start_date, "\nEnd date : ", end_date)
         logger.info("Historical data for {}, From : {}".format(symbol,start_date))
-        self.save_data(StringIO(response.text[3:]),f"{symbol}_{start_date.strftime('%Y-%m-%d')}")
+
+        data = pd.read_csv(StringIO(response.text[3:]))
+        self.save_data(data,f"{symbol}_{start_date}")
         
     def search_stocks(self, name:str) -> list :
         '''
@@ -254,6 +260,7 @@ class nse_data:
 
         :return : List of dict(symbol, comanyName) | Empty list[]
         '''
+        name = name.lower()
         url = url_data.search_url.value.format(name)
         response = self.get_url_data(url)
         stocks = []
@@ -261,5 +268,5 @@ class nse_data:
             for i in json.loads(response)["symbols"]:
                 stocks.append({"symbol":i["symbol"],"company":i["symbol_info"]})
 
-        print("Stocks with name : ", name, "Total : ", len(stocks))
+        print("Stocks with name :", name, "Total : ", len(stocks),"\n")
         return stocks

@@ -10,15 +10,19 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
 
 ## Package Structure
 ```bash
-  ├── src/
+  ├── web_scrapper/
   |    ├── __init__.py
   |    ├── get_data.py
   |    ├──  logger.py
   |    └── values.py
+  ├── stock_data/
+  |    ├── stock_price.csv
+  |    ├── indices.csv
+  |    └── stock_data.json
   ├── requirements.txt
-  ├── run.py
   ├── config.py
-  ├── database.py
+  ├── run.ipynb
+  ├── database.ipynb
   ├── tables.sql
   ├── queries.sql
   └── README.md
@@ -29,7 +33,10 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
 * **Data Storage** : Extracted data can be stored in the form of a `.csv` file and collected in the form of `dict` 
 * **Builtin Logger** :  for logging all the details in 3 levels (info, warning, error) in the `log.log` file
 
-Check the `run.py` file for some dummy codes and examples of now to use and store the data gathered from the scrapper in a database
+`run.ipynb` file for some dummy codes and examples of now to use and extract data from the web scrapper
+<br>`database.ipynb` contains codes how to load your extracted data into a database in the format given below
+<br>`requirements.txt` - All the required dependencies and packages
+<br>`stock_data/` - Contains few example files for column names and structure of extracted data
 
 ## How to Use
 
@@ -52,6 +59,7 @@ Use the required functions with the object
 objectName.stock_data("RELIANCE",True)  # Get information about a particular stock
 objectName.historical_stock_data("RELIANCE")   # Historical data for stock prices
 objectName.get_all_indices(save_data=True)   # Get all the indices list along with the url
+result = objectName.search_stocks("sey")   # Get stocks containing the string
 ```
 
 ## Database Structure
