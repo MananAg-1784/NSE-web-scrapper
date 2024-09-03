@@ -38,6 +38,18 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
 <br>`requirements.txt` - All the required dependencies and packages
 <br>`stock_data/` - Contains few example files for column names and structure of extracted data
 
+To use the `run` and `database` edit the `config.py` file
+```bash
+stocks_database = {
+    "endpoint":"",
+    "port":,
+    "dbname":"",
+    "user":"",
+    "password":""
+}
+current_folder = Folder to save data
+```
+
 ## How to Use
 
 Import the package
