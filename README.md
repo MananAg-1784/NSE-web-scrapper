@@ -33,23 +33,6 @@ Creating a web scrapper powered by `Requests` and `Beautiful Soup` to extract da
 * **Data Storage** : Extracted data can be stored in the form of a `.csv` file and collected in the form of `dict` 
 * **Builtin Logger** :  for logging all the details in 3 levels (info, warning, error) in the `log.log` file
 
-`run.ipynb` file for some dummy codes and examples of now to use and extract data from the web scrapper
-<br>`database.ipynb` contains codes how to load your extracted data into a database in the format given below
-<br>`requirements.txt` - All the required dependencies and packages
-<br>`stock_data/` - Contains few example files for column names and structure of extracted data
-
-To use the `run` and `database` edit the `config.py` file
-```bash
-stocks_database = {
-    "endpoint":"",
-    "port":,
-    "dbname":"",
-    "user":"",
-    "password":""
-}
-current_folder = Folder to save data
-```
-
 ## How to Use
 
 Import the package
@@ -57,7 +40,7 @@ Import the package
 from web_scrapper.get_data import nse_data
 from web_scrapper.values import *
 ```
-Initialise an object for the `nse_data class`
+Initialise an object for the `nse_data` class
 <br>Along with required argument `path` for initialising the storage location for files
 ```bash
 import os
@@ -72,6 +55,26 @@ objectName.stock_data("RELIANCE",True)  # Get information about a particular sto
 objectName.historical_stock_data("RELIANCE")   # Historical data for stock prices
 objectName.get_all_indices(save_data=True)   # Get all the indices list along with the url
 result = objectName.search_stocks("sey")   # Get stocks containing the string
+```
+
+<br>`run.ipynb` file for some dummy codes and examples of now to use and extract data from the web scrapper
+<br>`database.ipynb` contains codes how to load your extracted data into a database in the format given below
+<br>`requirements.txt` - All the required dependencies and packages
+<br>`stock_data/` - Contains few example files for column names and structure of extracted data
+
+To use the `run` and `database` edit the `config.py` file
+```bash
+# MySQL Database config values
+stocks_database = {
+    "endpoint":"",
+    "port":,
+    "dbname":"",
+    "user":"",
+    "password":""
+}
+
+# Absolute path of the folder to save the data
+current_folder = 'D:/code/..'
 ```
 
 ## Database Structure
